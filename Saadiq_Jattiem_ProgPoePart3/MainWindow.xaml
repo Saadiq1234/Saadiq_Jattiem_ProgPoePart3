@@ -75,7 +75,8 @@
                 <Button Content="Enter Recipe Details" Click="EnterRecipeDetails_Click" Margin="0,0,0,5"/>
                 <Button Content="Display All Recipes" Click="DisplayAllRecipes_Click" Margin="0,0,0,5"/>
                 <Button Content="Clear Data" Click="ClearData_Click" Margin="0,0,0,5"/>
-                <Button Content="Exit" Click="ExitButton_Click" Margin="0,0,0,5"/>
+                <Button Content="Delete Recipe" Click="DeleteRecipe_Click" Margin="0,0,0,5"/>
+              
             </StackPanel>
 
             <!-- ComboBox for recipe selection with label -->
@@ -105,6 +106,7 @@
                 <CheckBox Content="3x" Name="ScaleFactor3CheckBox" Checked="ScaleFactor3CheckBox_Checked" Unchecked="ScaleFactor3CheckBox_Unchecked" Margin="5"/>
                 <Button x:Name="ScaleButton" Content="Scale Recipe" Click="ScaleButton_Click" Margin="5"/>
                 <Button Content="Reset" Click="ResetButton_Click" Margin="5,5,5,0"/>
+                <Button Content="Exit" Click="ExitButton_Click" Margin="0,0,0,5"/>
             </StackPanel>
         </StackPanel>
 

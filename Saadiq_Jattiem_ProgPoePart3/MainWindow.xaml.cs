@@ -37,11 +37,15 @@ namespace RecipeManagerApp
         private void DisplayAllRecipes_Click(object sender, RoutedEventArgs e)
         {
             OutputTextBlock.Text = "";  // Clear previous output
+
             foreach (var recipe in recipeManager.GetRecipes())
             {
                 DisplayRecipeDetails(recipe);
+                OutputTextBlock.Text += "--------------------------------------------\n";
             }
         }
+
+
 
         private void ClearData_Click(object sender, RoutedEventArgs e)
         {
@@ -86,7 +90,6 @@ namespace RecipeManagerApp
             }
         }
 
-
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown(); // Exit the application
@@ -115,7 +118,6 @@ namespace RecipeManagerApp
             OutputTextBlock.Text += $"Total Calories: {recipe.TotalCalories}\n";
             OutputTextBlock.Text += "--------------------------------------------\n";
         }
-
 
         private void RecipeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -232,5 +234,24 @@ namespace RecipeManagerApp
             if (checkedBox != ScaleFactor3CheckBox)
                 ScaleFactor3CheckBox.IsChecked = false;
         }
+
+        private void DeleteRecipe_Click(object sender, RoutedEventArgs e)
+        {
+            if (RecipeComboBox.SelectedItem is Recipe selectedRecipe)
+            {
+                MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete '{selectedRecipe.Name}' recipe?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    recipeManager.DeleteRecipe(selectedRecipe);
+                    RefreshRecipeComboBox(); // Refresh ComboBox after deleting a recipe
+                    OutputTextBlock.Text = $"Recipe '{selectedRecipe.Name}' deleted successfully.";
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a recipe to delete.", "Delete Recipe", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
     }
 }

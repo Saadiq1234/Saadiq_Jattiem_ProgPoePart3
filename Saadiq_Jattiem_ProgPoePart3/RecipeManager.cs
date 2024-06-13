@@ -1,29 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Controls;
-using System.Windows;
 
 namespace RecipeManagerApp
 {
     public delegate void CalorieNotificationHandler(string recipeName, double totalCalories);
-
-    public class PlaceholderTextBox : TextBox
-    {
-        public static readonly DependencyProperty PlaceholderProperty =
-            DependencyProperty.Register("Placeholder", typeof(string), typeof(PlaceholderTextBox), new PropertyMetadata(""));
-
-        public string Placeholder
-        {
-            get { return (string)GetValue(PlaceholderProperty); }
-            set { SetValue(PlaceholderProperty, value); }
-        }
-
-        static PlaceholderTextBox()
-        {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(PlaceholderTextBox), new FrameworkPropertyMetadata(typeof(PlaceholderTextBox)));
-        }
-    }
 
     public class RecipeManager
     {
@@ -67,7 +48,7 @@ namespace RecipeManagerApp
 
         public Recipe GetRecipe(string recipeName)
         {
-            return recipes.Find(r => r.Name.Equals(recipeName, StringComparison.OrdinalIgnoreCase));
+            return recipes.FirstOrDefault(r => r.Name.Equals(recipeName, StringComparison.OrdinalIgnoreCase));
         }
 
         public void ClearData()
@@ -93,26 +74,6 @@ namespace RecipeManagerApp
             }
             return totalCalories;
         }
-
-        private static readonly Dictionary<string, string> UnitConversions = new Dictionary<string, string>
-        {
-            { "grams", "kilograms" },
-            { "milliliters", "liters" },
-            { "teaspoons", "tablespoons" },
-            { "tablespoons", "cups" },
-            { "cups", "liters" },
-            // Add other conversions as needed
-        };
-
-        private static readonly Dictionary<string, double> ConversionFactors = new Dictionary<string, double>
-        {
-            { "grams", 1000.0 },
-            { "milliliters", 1000.0 },
-            { "teaspoons", 3.0 },
-            { "tablespoons", 16.0 },
-            { "cups", 4.22675 },
-            // Add other conversion factors as needed
-        };
 
         public void ScaleRecipe(string recipeName, double factor)
         {
@@ -146,18 +107,8 @@ namespace RecipeManagerApp
 
         private string ConvertUnit(string unit, double factor)
         {
-            if (UnitConversions.ContainsKey(unit) && factor != 1)
-            {
-                if (factor > 1 && ConversionFactors.ContainsKey(unit))
-                {
-                    return UnitConversions[unit];
-                }
-                else if (factor < 1 && ConversionFactors.ContainsValue(1 / factor))
-                {
-                    return UnitConversions.FirstOrDefault(x => x.Value == unit).Key;
-                }
-            }
-            return unit;
+            // Implement unit conversion logic here
+            return unit; // Placeholder, implement actual conversion as needed
         }
 
         public void ResetQuantities(string recipeName)
@@ -237,5 +188,10 @@ namespace RecipeManagerApp
                 Console.WriteLine();
             }
         }
+        public void DeleteRecipe(Recipe recipe)
+        {
+            recipes.Remove(recipe);
+        }
+
     }
 }
