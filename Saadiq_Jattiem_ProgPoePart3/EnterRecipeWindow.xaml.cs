@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using static RecipeManagerApp.RecipeManager;
@@ -23,10 +22,11 @@ namespace RecipeManagerApp
         {
             string name = IngredientNameTextBox.Text;
             if (double.TryParse(IngredientQuantityTextBox.Text, out double quantity) &&
-                int.TryParse(IngredientCaloriesTextBox.Text, out int calories))
+                int.TryParse(IngredientCaloriesTextBox.Text, out int calories) &&
+                FoodGroupsComboBox.SelectedItem is ComboBoxItem selectedFoodGroup)
             {
                 string unit = IngredientUnitTextBox.Text;
-                string foodGroup = IngredientFoodGroupTextBox.Text;
+                string foodGroup = selectedFoodGroup.Content.ToString();
 
                 var ingredient = new Ingredient
                 {
@@ -44,7 +44,7 @@ namespace RecipeManagerApp
             }
             else
             {
-                MessageBox.Show("Please enter valid quantity and calories.", "Input Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Please enter valid quantity, calories, and select a food group.", "Input Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -82,22 +82,12 @@ namespace RecipeManagerApp
                 Name = RecipeNameTextBox.Text,
                 Ingredients = ingredients,
                 Steps = steps,
-                TotalCalories = CalculateTotalCalories(ingredients)
+                TotalCalories = recipeManager.CalculateTotalCalories(ingredients)
             };
 
             recipeManager.AddRecipe(newRecipe); // Add the new recipe to the RecipeManager
             DialogResult = true;
             Close();
-        }
-
-        private double CalculateTotalCalories(List<Ingredient> ingredients)
-        {
-            double totalCalories = 0;
-            foreach (var ingredient in ingredients)
-            {
-                totalCalories += ingredient.Calories * ingredient.Quantity;
-            }
-            return totalCalories;
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -112,7 +102,7 @@ namespace RecipeManagerApp
             IngredientQuantityTextBox.Clear();
             IngredientUnitTextBox.Clear();
             IngredientCaloriesTextBox.Clear();
-            IngredientFoodGroupTextBox.Clear();
+            FoodGroupsComboBox.SelectedIndex = -1; // Clear selection
         }
     }
 }

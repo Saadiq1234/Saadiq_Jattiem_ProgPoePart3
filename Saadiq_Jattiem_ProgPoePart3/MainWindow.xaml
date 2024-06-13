@@ -58,7 +58,6 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="Gray"/>
         </Style>
-
     </Window.Resources>
 
     <Grid Margin="10">
@@ -79,8 +78,9 @@
                 <Button Content="Exit" Click="ExitButton_Click" Margin="0,0,0,5"/>
             </StackPanel>
 
-            <!-- ComboBox for recipe selection -->
-            <ComboBox x:Name="RecipeComboBox" Width="200" Margin="5,10,0,0" DisplayMemberPath="Name" SelectionChanged="RecipeComboBox_SelectionChanged"
+            <!-- ComboBox for recipe selection with label -->
+            <TextBlock Text="Display a Specific Recipe:" FontWeight="Bold" Margin="5,10,0,5"/>
+            <ComboBox x:Name="RecipeComboBox" Width="200" Margin="5,0,0,10" DisplayMemberPath="Name" SelectionChanged="RecipeComboBox_SelectionChanged"
                       ToolTip="Select a recipe to display its details">
                 <ComboBox.Background>
                     <LinearGradientBrush EndPoint="0,1">

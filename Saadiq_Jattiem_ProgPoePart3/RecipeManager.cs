@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows;
 
@@ -46,7 +47,6 @@ namespace RecipeManagerApp
             public string FoodGroup { get; set; }
         }
 
-
         private List<Recipe> recipes;
 
         public RecipeManager()
@@ -84,35 +84,35 @@ namespace RecipeManagerApp
             }
         }
 
-        public double CalculateTotalCalories(Recipe recipe)
+        public double CalculateTotalCalories(List<Ingredient> ingredients)
         {
             double totalCalories = 0;
-            foreach (var ingredient in recipe.Ingredients)
+            foreach (var ingredient in ingredients)
             {
-                totalCalories += (ingredient.Calories * ingredient.Quantity);
+                totalCalories += ingredient.Calories * ingredient.Quantity;
             }
             return totalCalories;
         }
 
         private static readonly Dictionary<string, string> UnitConversions = new Dictionary<string, string>
-    {
-        { "grams", "kilograms" },
-        { "milliliters", "liters" },
-        { "teaspoons", "tablespoons" },
-        { "tablespoons", "cups" },
-        { "cups", "liters" },
-        // Add other conversions as needed
-    };
+        {
+            { "grams", "kilograms" },
+            { "milliliters", "liters" },
+            { "teaspoons", "tablespoons" },
+            { "tablespoons", "cups" },
+            { "cups", "liters" },
+            // Add other conversions as needed
+        };
 
         private static readonly Dictionary<string, double> ConversionFactors = new Dictionary<string, double>
-    {
-        { "grams", 1000.0 },
-        { "milliliters", 1000.0 },
-        { "teaspoons", 3.0 },
-        { "tablespoons", 16.0 },
-        { "cups", 4.22675 },
-        // Add other conversion factors as needed
-    };
+        {
+            { "grams", 1000.0 },
+            { "milliliters", 1000.0 },
+            { "teaspoons", 3.0 },
+            { "tablespoons", 16.0 },
+            { "cups", 4.22675 },
+            // Add other conversion factors as needed
+        };
 
         public void ScaleRecipe(string recipeName, double factor)
         {
@@ -125,7 +125,7 @@ namespace RecipeManagerApp
                     ingredient.Unit = ConvertUnit(ingredient.Unit, factor);
                 }
 
-                recipe.TotalCalories = CalculateTotalCalories(recipe);
+                recipe.TotalCalories = CalculateTotalCalories(recipe.Ingredients);
                 Console.WriteLine("Recipe scaled successfully.");
 
                 if (recipe.TotalCalories > 300)
@@ -160,7 +160,6 @@ namespace RecipeManagerApp
             return unit;
         }
 
-
         public void ResetQuantities(string recipeName)
         {
             Recipe recipe = GetRecipe(recipeName);
@@ -171,7 +170,7 @@ namespace RecipeManagerApp
                     ingredient.Quantity = ingredient.OriginalQuantity;
                 }
 
-                recipe.TotalCalories = CalculateTotalCalories(recipe);
+                recipe.TotalCalories = CalculateTotalCalories(recipe.Ingredients);
                 Console.WriteLine("Quantities reset to original values.");
                 Console.WriteLine();
             }

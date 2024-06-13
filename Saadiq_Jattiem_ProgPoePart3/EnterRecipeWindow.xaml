@@ -1,7 +1,7 @@
 ﻿<Window x:Class="RecipeManagerApp.EnterRecipeWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Enter Recipe" Height="450" Width="400">
+        Title="Enter Recipe" Height="500" Width="450">
     <Window.Resources>
         <Style x:Key="PlaceholderTextBoxStyle" TargetType="TextBox">
             <Style.Resources>
@@ -32,16 +32,49 @@
             <TextBlock Text="Recipe Name:" Margin="0,0,0,5"/>
             <TextBox x:Name="RecipeNameTextBox" Margin="0,0,0,10" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Recipe Name"/>
 
-            <TextBlock Text="Ingredients (name, quantity, unit, calories, food group):" Margin="0,0,0,5"/>
+            <TextBlock Text="Ingredients:" Margin="0,0,0,5"/>
+            <Grid Margin="0,0,0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Name:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                <TextBox x:Name="IngredientNameTextBox" Grid.Row="0" Grid.Column="1" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Name"/>
+
+                <TextBlock Text="Quantity:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                <TextBox x:Name="IngredientQuantityTextBox" Grid.Row="1" Grid.Column="1" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Qty"/>
+
+                <TextBlock Text="Unit:" Grid.Row="2" Grid.Column="0" Margin="5"/>
+                <TextBox x:Name="IngredientUnitTextBox" Grid.Row="2" Grid.Column="1" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Unit"/>
+
+                <TextBlock Text="Calories:" Grid.Row="3" Grid.Column="0" Margin="5"/>
+                <TextBox x:Name="IngredientCaloriesTextBox" Grid.Row="3" Grid.Column="1" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Cal"/>
+
+                <TextBlock Text="Food Group:" Grid.Row="4" Grid.Column="0" Margin="5"/>
+                <ComboBox x:Name="FoodGroupsComboBox" Grid.Row="4" Grid.Column="1" Margin="5" Tag="Food Group">
+                    <ComboBoxItem Content="Vegetables"/>
+                    <ComboBoxItem Content="Fruits"/>
+                    <ComboBoxItem Content="Grains"/>
+                    <ComboBoxItem Content="Protein Foods"/>
+                    <ComboBoxItem Content="Dairy"/>
+                    <ComboBoxItem Content="Fats"/>
+                    <ComboBoxItem Content="Others"/>
+                </ComboBox>
+
+                <Button Content="Add Ingredient" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Click="AddIngredient_Click" Margin="5"/>
+            </Grid>
+
+            <TextBlock Text="Ingredients List:" Margin="0,0,0,5"/>
             <ListBox x:Name="IngredientsListBox" Height="100" Margin="0,0,0,10"/>
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <TextBox x:Name="IngredientNameTextBox" Width="60" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Name"/>
-                <TextBox x:Name="IngredientQuantityTextBox" Width="40" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Qty"/>
-                <TextBox x:Name="IngredientUnitTextBox" Width="40" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Unit"/>
-                <TextBox x:Name="IngredientCaloriesTextBox" Width="50" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Cal"/>
-                <TextBox x:Name="IngredientFoodGroupTextBox" Width="80" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Food Group"/>
-                <Button Content="Add" Click="AddIngredient_Click" Margin="5"/>
-            </StackPanel>
 
             <TextBlock Text="Steps:" Margin="0,0,0,5"/>
             <TextBox x:Name="StepTextBox" Width="300" Margin="0,5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Step"/>
