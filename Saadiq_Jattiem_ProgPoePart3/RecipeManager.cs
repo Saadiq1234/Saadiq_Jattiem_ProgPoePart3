@@ -46,6 +46,7 @@ namespace RecipeManagerApp
             public string FoodGroup { get; set; }
         }
 
+
         private List<Recipe> recipes;
 
         public RecipeManager()

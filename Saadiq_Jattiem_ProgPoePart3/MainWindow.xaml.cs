@@ -73,21 +73,19 @@ namespace RecipeManagerApp
             var filteredRecipes = recipeManager.GetRecipes().Where(r =>
                 (string.IsNullOrEmpty(ingredient) || r.Ingredients.Exists(i => i.Name.ToLower().Contains(ingredient))) &&
                 (string.IsNullOrEmpty(foodGroup) || r.Ingredients.Exists(i => i.FoodGroup.ToLower().Contains(foodGroup))) &&
-                (!isMaxCaloriesValid || r.TotalCalories <= maxCalories));
+                (!isMaxCaloriesValid || r.TotalCalories <= maxCalories)).ToList();
 
-            OutputTextBlock.Text = ""; // Clear previous output
-            if (!filteredRecipes.Any())
+            if (filteredRecipes.Any())
             {
-                OutputTextBlock.Text = "No recipes found.";
+                var filteredRecipesWindow = new FilteredRecipesWindow(filteredRecipes);
+                filteredRecipesWindow.Show();
             }
             else
             {
-                foreach (var recipe in filteredRecipes)
-                {
-                    DisplayRecipeDetails(recipe);
-                }
+                MessageBox.Show("No recipes found.", "Filter Results", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
@@ -100,7 +98,7 @@ namespace RecipeManagerApp
             OutputTextBlock.Text += "Ingredients:\n";
             foreach (var ingredient in recipe.Ingredients)
             {
-                OutputTextBlock.Text += $"{ingredient.Name}: {ingredient.Quantity} {ingredient.Unit}\n";
+                OutputTextBlock.Text += $"{ingredient.Name}: {ingredient.Quantity} {ingredient.Unit}, {ingredient.Calories} Cal, {ingredient.FoodGroup}\n";
             }
             OutputTextBlock.Text += "Steps:\n";
             foreach (var step in recipe.Steps)
