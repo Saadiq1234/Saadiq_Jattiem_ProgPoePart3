@@ -33,7 +33,7 @@ namespace RecipeManagerApp
             public string Unit { get; set; }
             public double Calories { get; set; }
             public string FoodGroup { get; set; }
-            public double OriginalQuantity { get; set; } // Add OriginalQuantity property
+            public double OriginalQuantity { get; set; }
 
             public Ingredient(string name, double quantity, string unit, double calories, string foodGroup)
             {
@@ -42,11 +42,9 @@ namespace RecipeManagerApp
                 Unit = unit;
                 Calories = calories;
                 FoodGroup = foodGroup;
-                OriginalQuantity = quantity; // Store the original quantity when initializing
+                OriginalQuantity = quantity;
             }
         }
-
-
 
         private List<Recipe> recipes;
 
@@ -58,17 +56,15 @@ namespace RecipeManagerApp
         public void AddRecipe(Recipe recipe)
         {
             recipes.Add(recipe);
-            CalorieExceeded?.Invoke(recipe.Name, recipe.TotalCalories);
+            if (recipe.TotalCalories > 300)
+            {
+                CalorieExceeded?.Invoke(recipe.Name, recipe.TotalCalories);
+            }
         }
 
         public List<Recipe> GetRecipes()
         {
             return recipes;
-        }
-
-        public Recipe GetRecipe(string recipeName)
-        {
-            return recipes.FirstOrDefault(r => r.Name.Equals(recipeName, StringComparison.OrdinalIgnoreCase));
         }
 
         public void ClearData()
@@ -78,7 +74,7 @@ namespace RecipeManagerApp
 
         public void DeleteRecipe(string recipeName)
         {
-            Recipe recipeToDelete = recipes.Find(r => r.Name.Equals(recipeName, StringComparison.OrdinalIgnoreCase));
+            Recipe recipeToDelete = recipes.FirstOrDefault(r => r.Name.Equals(recipeName, StringComparison.OrdinalIgnoreCase));
             if (recipeToDelete != null)
             {
                 recipes.Remove(recipeToDelete);
@@ -87,12 +83,7 @@ namespace RecipeManagerApp
 
         public double CalculateTotalCalories(List<Ingredient> ingredients)
         {
-            double totalCalories = 0;
-            foreach (var ingredient in ingredients)
-            {
-                totalCalories += ingredient.Calories * ingredient.Quantity;
-            }
-            return totalCalories;
+            return ingredients.Sum(i => i.Calories);
         }
 
         public void ScaleRecipe(string recipeName, double factor)
@@ -103,7 +94,6 @@ namespace RecipeManagerApp
                 foreach (var ingredient in recipe.Ingredients)
                 {
                     ingredient.Quantity *= factor;
-                    ingredient.Unit = ConvertUnit(ingredient.Unit, factor);
                 }
 
                 recipe.TotalCalories = CalculateTotalCalories(recipe.Ingredients);
@@ -112,21 +102,7 @@ namespace RecipeManagerApp
                 {
                     CalorieExceeded?.Invoke(recipe.Name, recipe.TotalCalories);
                 }
-
-                Console.WriteLine("Recipe scaled successfully.");
-                Console.WriteLine();
             }
-            else
-            {
-                Console.WriteLine("Recipe not found.");
-                Console.WriteLine();
-            }
-        }
-
-        private string ConvertUnit(string unit, double factor)
-        {
-            // Implement unit conversion logic here if needed
-            return unit;
         }
 
         public void ResetQuantities(string recipeName)
@@ -140,72 +116,12 @@ namespace RecipeManagerApp
                 }
 
                 recipe.TotalCalories = CalculateTotalCalories(recipe.Ingredients);
-
-                Console.WriteLine("Quantities reset to original values.");
-                Console.WriteLine();
-            }
-            else
-            {
-                Console.WriteLine("Recipe not found.");
-                Console.WriteLine();
             }
         }
 
-        public void DisplayAllRecipes()
+        private Recipe GetRecipe(string recipeName)
         {
-            if (recipes.Count == 0)
-            {
-                Console.WriteLine("No recipes available.");
-                Console.WriteLine();
-                return;
-            }
-
-            recipes.Sort((x, y) => x.Name.CompareTo(y.Name));
-
-            Console.WriteLine("Available Recipes:");
-            foreach (var recipe in recipes)
-            {
-                Console.WriteLine($"Recipe: {recipe.Name}");
-                Console.WriteLine("Ingredients:");
-                foreach (var ingredient in recipe.Ingredients)
-                {
-                    Console.WriteLine($"{ingredient.Name}: {ingredient.Quantity} {ingredient.Unit}");
-                }
-                Console.WriteLine("Steps:");
-                for (int i = 0; i < recipe.Steps.Count; i++)
-                {
-                    Console.WriteLine($"{i + 1}. {recipe.Steps[i]}");
-                }
-                Console.WriteLine($"Total Calories: {recipe.TotalCalories}");
-                Console.WriteLine("--------------------------------------------");
-            }
-            Console.WriteLine();
-        }
-
-        public void DisplayRecipe(string recipeName)
-        {
-            Recipe recipe = GetRecipe(recipeName);
-            if (recipe != null)
-            {
-                Console.WriteLine($"Recipe: {recipe.Name}");
-                Console.WriteLine("Ingredients:");
-                foreach (var ingredient in recipe.Ingredients)
-                {
-                    Console.WriteLine($"{ingredient.Name}: {ingredient.Quantity} {ingredient.Unit}");
-                }
-                Console.WriteLine("Steps:");
-                for (int i = 0; i < recipe.Steps.Count; i++)
-                {
-                    Console.WriteLine($"{i + 1}. {recipe.Steps[i]}");
-                }
-                Console.WriteLine($"Total Calories: {recipe.TotalCalories}");
-                Console.WriteLine();
-            }
-            else
-            {
-                Console.WriteLine("Recipe not found.");
-                Console.WriteLine();
-            }
+            return recipes.FirstOrDefault(r => r.Name.Equals(recipeName, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

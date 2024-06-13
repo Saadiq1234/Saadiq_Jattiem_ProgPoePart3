@@ -38,7 +38,9 @@ namespace RecipeManagerApp
         {
             OutputTextBlock.Text = "";  // Clear previous output
 
-            foreach (var recipe in recipeManager.GetRecipes())
+            var recipes = recipeManager.GetRecipes().OrderBy(r => r.Name); // Sort recipes by name
+
+            foreach (var recipe in recipes)
             {
                 DisplayRecipeDetails(recipe);
                 OutputTextBlock.Text += "--------------------------------------------\n";
@@ -75,7 +77,7 @@ namespace RecipeManagerApp
             var filteredRecipes = recipeManager.GetRecipes().Where(r =>
                 (string.IsNullOrEmpty(ingredient) || r.Ingredients.Any(i => i.Name.ToLower().Contains(ingredient))) &&
                 (string.IsNullOrEmpty(foodGroup) || r.Ingredients.Any(i => i.FoodGroup.ToLower().Contains(foodGroup))) &&
-                (!isMaxCaloriesValid || r.TotalCalories <= maxCalories)).ToList();
+                (!isMaxCaloriesValid || r.TotalCalories <= maxCalories)).OrderBy(r => r.Name).ToList(); // Sort filtered recipes by name
 
             if (filteredRecipes.Any())
             {
@@ -128,9 +130,9 @@ namespace RecipeManagerApp
 
         private void RefreshRecipeComboBox()
         {
-            var recipes = recipeManager.GetRecipes();
+            var recipes = recipeManager.GetRecipes().OrderBy(r => r.Name).ToList(); // Sort recipes by name
             RecipeComboBox.ItemsSource = null; // Clear current items source
-            RecipeComboBox.ItemsSource = recipes; // Set ComboBox items to current recipes
+            RecipeComboBox.ItemsSource = recipes; // Set ComboBox items to current recipes sorted alphabetically
             RecipeComboBox.DisplayMemberPath = nameof(RecipeManager.Recipe.Name); // Ensure the ComboBox displays recipe names
         }
 

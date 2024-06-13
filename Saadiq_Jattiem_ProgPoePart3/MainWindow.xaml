@@ -10,21 +10,20 @@
                     <ControlTemplate TargetType="TextBox">
                         <Grid>
                             <TextBox x:Name="PART_TextBox"
-                             Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             Background="Transparent"
-                             BorderThickness="0"
-                             VerticalContentAlignment="Center"
-                             HorizontalContentAlignment="Left"
-                             Padding="5"/>
+                                     Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     VerticalContentAlignment="Center"
+                                     HorizontalContentAlignment="Left"
+                                     Padding="5"/>
 
                             <TextBlock x:Name="Placeholder"
-                               Text="{TemplateBinding Tag}"
-                               Foreground="Gray"
-                               Margin="5,0,0,0"
-                               VerticalAlignment="Center"
-                               IsHitTestVisible="False"
-                               Visibility="Collapsed"/>
-
+                                       Text="{TemplateBinding Tag}"
+                                       Foreground="Gray"
+                                       Margin="5,0,0,0"
+                                       VerticalAlignment="Center"
+                                       IsHitTestVisible="False"
+                                       Visibility="Collapsed"/>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <MultiTrigger>
@@ -59,7 +58,6 @@
             <Setter Property="BorderBrush" Value="Gray"/>
         </Style>
     </Window.Resources>
-
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
@@ -76,7 +74,6 @@
                 <Button Content="Display All Recipes" Click="DisplayAllRecipes_Click" Margin="0,0,0,5"/>
                 <Button Content="Clear Data" Click="ClearData_Click" Margin="0,0,0,5"/>
                 <Button Content="Delete Recipe" Click="DeleteRecipe_Click" Margin="0,0,0,5"/>
-              
             </StackPanel>
 
             <!-- ComboBox for recipe selection with label -->
