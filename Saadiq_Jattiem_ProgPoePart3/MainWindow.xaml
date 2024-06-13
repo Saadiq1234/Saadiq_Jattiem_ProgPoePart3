@@ -9,24 +9,44 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
                         <Grid>
-                            <TextBox x:Name="textBox"
-                                     Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     Background="Transparent"
-                                     BorderThickness="0"
-                                     VerticalContentAlignment="Center"
-                                     HorizontalContentAlignment="Left"/>
+                            <TextBox x:Name="PART_TextBox"
+                             Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             VerticalContentAlignment="Center"
+                             HorizontalContentAlignment="Left"
+                             Padding="5"/>
+
                             <TextBlock x:Name="Placeholder"
-                                       Text="{TemplateBinding Tag}"
-                                       Foreground="Gray"
-                                       Margin="5,0,0,0"
-                                       VerticalAlignment="Center"
-                                       IsHitTestVisible="False"
-                                       Visibility="Collapsed"/>
+                               Text="{TemplateBinding Tag}"
+                               Foreground="Gray"
+                               Margin="5,0,0,0"
+                               VerticalAlignment="Center"
+                               IsHitTestVisible="False"
+                               Visibility="Collapsed"/>
+
                         </Grid>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="Text" Value="">
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Text" Value="" />
+                                    <Condition Property="IsKeyboardFocused" Value="False" />
+                                </MultiTrigger.Conditions>
                                 <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
-                            </Trigger>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Text" Value="{x:Null}" />
+                                    <Condition Property="IsKeyboardFocused" Value="False" />
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
+                            </MultiTrigger>
+                            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
+                                <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
+                                <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
                             <Trigger Property="Text" Value="{x:Null}">
                                 <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
                             </Trigger>
@@ -38,6 +58,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="Gray"/>
         </Style>
+
     </Window.Resources>
 
     <Grid Margin="10">
@@ -76,9 +97,12 @@
             <TextBox x:Name="FilterMaxCaloriesTextBox" Width="200" Margin="5,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Max Calories"/>
             <Button Content="Filter" Click="FilterButton_Click" Margin="5,0,0,10"/>
 
-            <!-- Reset and Scale buttons -->
+            <!-- Reset and Scale controls -->
             <StackPanel Margin="5,20,0,0">
-                <TextBox x:Name="ScaleFactorTextBox" Placeholder="Enter scaling factor" Margin="5"/>
+                <TextBox x:Name="ScaleFactorTextBox" Tag="Enter scaling factor" Margin="5"/>
+                <CheckBox Content="0.5x" Name="ScaleFactor05CheckBox" Checked="ScaleFactor05CheckBox_Checked" Unchecked="ScaleFactor05CheckBox_Unchecked" Margin="5"/>
+                <CheckBox Content="2x" Name="ScaleFactor2CheckBox" Checked="ScaleFactor2CheckBox_Checked" Unchecked="ScaleFactor2CheckBox_Unchecked" Margin="5"/>
+                <CheckBox Content="3x" Name="ScaleFactor3CheckBox" Checked="ScaleFactor3CheckBox_Checked" Unchecked="ScaleFactor3CheckBox_Unchecked" Margin="5"/>
                 <Button x:Name="ScaleButton" Content="Scale Recipe" Click="ScaleButton_Click" Margin="5"/>
                 <Button Content="Reset" Click="ResetButton_Click" Margin="5,5,5,0"/>
             </StackPanel>

@@ -2,12 +2,14 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using static RecipeManagerApp.RecipeManager;
 
 namespace RecipeManagerApp
 {
     public partial class MainWindow : Window
     {
         private RecipeManager recipeManager;
+        private double currentScaleFactor = 1.0; // Track current scaling factor
 
         public MainWindow()
         {
@@ -50,10 +52,10 @@ namespace RecipeManagerApp
 
         private void DisplayRecipe_Click(object sender, RoutedEventArgs e)
         {
-            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe recipe)
+            if (RecipeComboBox.SelectedItem is Recipe selectedRecipe)
             {
                 OutputTextBlock.Text = ""; // Clear previous output
-                DisplayRecipeDetails(recipe);
+                DisplayRecipeDetails(selectedRecipe);
             }
             else
             {
@@ -92,7 +94,7 @@ namespace RecipeManagerApp
             Application.Current.Shutdown(); // Exit the application
         }
 
-        private void DisplayRecipeDetails(RecipeManager.Recipe recipe)
+        private void DisplayRecipeDetails(Recipe recipe)
         {
             OutputTextBlock.Text += $"Recipe: {recipe.Name}\n";
             OutputTextBlock.Text += "Ingredients:\n";
@@ -111,7 +113,7 @@ namespace RecipeManagerApp
 
         private void RecipeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe selectedRecipe)
+            if (RecipeComboBox.SelectedItem is Recipe selectedRecipe)
             {
                 OutputTextBlock.Text = ""; // Clear previous output
                 DisplayRecipeDetails(selectedRecipe);
@@ -134,25 +136,11 @@ namespace RecipeManagerApp
 
         private void ScaleButton_Click(object sender, RoutedEventArgs e)
         {
-            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe selectedRecipe)
+            if (RecipeComboBox.SelectedItem is Recipe selectedRecipe)
             {
-                if (double.TryParse(ScaleFactorTextBox.Text, out double factor))
-                {
-                    if (factor == 0.5 || factor == 2 || factor == 3)
-                    {
-                        recipeManager.ScaleRecipe(selectedRecipe.Name, factor);
-                        OutputTextBlock.Text = ""; // Clear previous output
-                        DisplayRecipeDetails(selectedRecipe); // Display updated recipe details
-                    }
-                    else
-                    {
-                        OutputTextBlock.Text = "Invalid scaling factor. Please enter 0.5, 2, or 3.";
-                    }
-                }
-                else
-                {
-                    OutputTextBlock.Text = "Invalid input. Please enter a valid number.";
-                }
+                recipeManager.ScaleRecipe(selectedRecipe.Name, currentScaleFactor);
+                OutputTextBlock.Text = ""; // Clear previous output
+                DisplayRecipeDetails(selectedRecipe); // Display updated recipe details
             }
             else
             {
@@ -160,10 +148,9 @@ namespace RecipeManagerApp
             }
         }
 
-
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
-            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe selectedRecipe)
+            if (RecipeComboBox.SelectedItem is Recipe selectedRecipe)
             {
                 recipeManager.ResetQuantities(selectedRecipe.Name);
                 OutputTextBlock.Text = ""; // Clear previous output
@@ -173,6 +160,71 @@ namespace RecipeManagerApp
             {
                 OutputTextBlock.Text = "Please select a recipe from the ComboBox.";
             }
+        }
+
+        private void ScaleFactor05CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            currentScaleFactor = 0.5;
+            UpdateScaleFactorText();
+            UncheckOtherScaleFactors((CheckBox)sender);
+        }
+
+        private void ScaleFactor05CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (!ScaleFactor2CheckBox.IsChecked == true && !ScaleFactor3CheckBox.IsChecked == true)
+            {
+                currentScaleFactor = 1.0;
+                UpdateScaleFactorText();
+            }
+        }
+
+        private void ScaleFactor2CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            currentScaleFactor = 2.0;
+            UpdateScaleFactorText();
+            UncheckOtherScaleFactors((CheckBox)sender);
+        }
+
+        private void ScaleFactor2CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (!ScaleFactor05CheckBox.IsChecked == true && !ScaleFactor3CheckBox.IsChecked == true)
+            {
+                currentScaleFactor = 1.0;
+                UpdateScaleFactorText();
+            }
+        }
+
+        private void ScaleFactor3CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            currentScaleFactor = 3.0;
+            UpdateScaleFactorText();
+            UncheckOtherScaleFactors((CheckBox)sender);
+        }
+
+        private void ScaleFactor3CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (!ScaleFactor05CheckBox.IsChecked == true && !ScaleFactor2CheckBox.IsChecked == true)
+            {
+                currentScaleFactor = 1.0;
+                UpdateScaleFactorText();
+            }
+        }
+
+        private void UpdateScaleFactorText()
+        {
+            ScaleFactorTextBox.Text = currentScaleFactor.ToString();
+        }
+
+        private void UncheckOtherScaleFactors(CheckBox checkedBox)
+        {
+            if (checkedBox != ScaleFactor05CheckBox)
+                ScaleFactor05CheckBox.IsChecked = false;
+
+            if (checkedBox != ScaleFactor2CheckBox)
+                ScaleFactor2CheckBox.IsChecked = false;
+
+            if (checkedBox != ScaleFactor3CheckBox)
+                ScaleFactor3CheckBox.IsChecked = false;
         }
     }
 }
