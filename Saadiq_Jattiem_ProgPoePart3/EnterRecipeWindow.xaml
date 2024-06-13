@@ -28,8 +28,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ListBox x:Name="StepsListBox" Height="100" Margin="0,0,0,10"/>
-
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,10">
             <TextBlock Text="Recipe Name:" Margin="0,0,0,5"/>
             <TextBox x:Name="RecipeNameTextBox" Margin="0,0,0,10" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Recipe Name"/>
@@ -45,10 +43,10 @@
                 <Button Content="Add" Click="AddIngredient_Click" Margin="5"/>
             </StackPanel>
 
-            <TextBlock Text="Number of Steps:" Margin="0,0,0,5"/>
-            <TextBox x:Name="NumberOfStepsTextBox" Width="50" Margin="0,0,0,10" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Steps"/>
+            <TextBlock Text="Steps:" Margin="0,0,0,5"/>
             <TextBox x:Name="StepTextBox" Width="300" Margin="0,5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Step"/>
             <Button Content="Add Step" Click="AddStepButton_Click" Margin="5"/>
+            <ListBox x:Name="StepsListBox" Height="100" Margin="0,0,0,10"/>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">

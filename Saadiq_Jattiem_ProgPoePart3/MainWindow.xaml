@@ -4,48 +4,83 @@
         Title="Recipe Manager" Height="450" Width="800">
     <Window.Resources>
         <Style x:Key="PlaceholderTextBoxStyle" TargetType="TextBox">
-            <Style.Resources>
-                <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
-                    <VisualBrush.Visual>
-                        <TextBlock Text="Recipe Name" Foreground="Gray" />
-                    </VisualBrush.Visual>
-                </VisualBrush>
-            </Style.Resources>
-            <Style.Triggers>
-                <Trigger Property="Text" Value="">
-                    <Setter Property="Background" Value="{DynamicResource CueBannerBrush}" />
-                </Trigger>
-                <Trigger Property="Text" Value="{x:Null}">
-                    <Setter Property="Background" Value="{DynamicResource CueBannerBrush}" />
-                </Trigger>
-            </Style.Triggers>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid>
+                            <TextBox x:Name="textBox"
+                                     Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     VerticalContentAlignment="Center"
+                                     HorizontalContentAlignment="Left"/>
+                            <TextBlock x:Name="Placeholder"
+                                       Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
+                                       Foreground="Gray"
+                                       Margin="5,0,0,0"
+                                       VerticalAlignment="Center"
+                                       IsHitTestVisible="False"
+                                       Visibility="Collapsed"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
         </Style>
     </Window.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Vertical" Grid.Row="0" Margin="10">
+        <StackPanel Grid.Column="0" VerticalAlignment="Top">
             <TextBlock Text="Recipe Manager" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
 
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <Button Content="Enter Recipe Details" Click="EnterRecipeDetails_Click" Margin="5"/>
-                <Button Content="Display All Recipes" Click="DisplayAllRecipes_Click" Margin="5"/>
-                <Button Content="Clear Data" Click="ClearData_Click" Margin="5"/>
+            <Button Content="Enter Recipe Details" Click="EnterRecipeDetails_Click" Margin="5"/>
+            <Button Content="Display All Recipes" Click="DisplayAllRecipes_Click" Margin="5"/>
+            <Button Content="Clear Data" Click="ClearData_Click" Margin="5"/>
+            <Button Content="Exit" Click="ExitButton_Click" Margin="5"/>
+
+            <StackPanel Margin="5">
+                <ComboBox x:Name="RecipeComboBox" Width="200" Margin="0,5,0,0" Text="display specific recipe">
+                    <ComboBox.Background>
+                        <LinearGradientBrush EndPoint="0,1">
+                            <GradientStop Color="#FFF0F0F0"/>
+                            <GradientStop Color="#FF1F50CA" Offset="1"/>
+                        </LinearGradientBrush>
+                    </ComboBox.Background>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Content="Display Specific Recipe" Click="DisplayRecipe_Click" Margin="0,5,0,0"/>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
-                <TextBox x:Name="RecipeNameTextBox" Width="200" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" />
-                <Button Content="Display Recipe" Click="DisplayRecipe_Click" Margin="5"/>
-                <Button Content="Delete Recipe" Click="DeleteRecipe_Click" Margin="5"/>
-            </StackPanel>
+            <TextBlock Text="Filter Recipes" FontWeight="Bold" Margin="5"/>
+            <TextBox x:Name="FilterIngredientTextBox" Width="200" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Ingredient Name"/>
+            <TextBox x:Name="FilterFoodGroupTextBox" Width="200" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Food Group"/>
+            <TextBox x:Name="FilterMaxCaloriesTextBox" Width="200" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Max Calories"/>
+            <Button Content="Filter" Click="FilterButton_Click" Margin="5"/>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="1" Margin="10">
-            <TextBlock x:Name="OutputTextBlock" TextWrapping="Wrap"/>
-        </ScrollViewer>
+        <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Padding="10">
+            <ScrollViewer Margin="10">
+                <TextBlock x:Name="OutputTextBlock" TextWrapping="Wrap"/>
+            </ScrollViewer>
+        </Border>
     </Grid>
 </Window>

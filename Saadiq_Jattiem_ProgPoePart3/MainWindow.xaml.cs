@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 
 namespace RecipeManagerApp
 {
@@ -11,6 +12,7 @@ namespace RecipeManagerApp
             InitializeComponent();
             recipeManager = new RecipeManager();
             recipeManager.CalorieExceeded += RecipeManager_CalorieExceeded;
+            RecipeComboBox.ItemsSource = recipeManager.GetRecipes();
         }
 
         private void RecipeManager_CalorieExceeded(string recipeName, double totalCalories)
@@ -23,13 +25,14 @@ namespace RecipeManagerApp
 
         private void EnterRecipeDetails_Click(object sender, RoutedEventArgs e)
         {
-            EnterRecipeWindow enterRecipeWindow = new EnterRecipeWindow(recipeManager); // Pass recipeManager to the constructor
+            EnterRecipeWindow enterRecipeWindow = new EnterRecipeWindow(recipeManager);
             if (enterRecipeWindow.ShowDialog() == true)
             {
                 var newRecipe = enterRecipeWindow.NewRecipe;
                 if (newRecipe != null)
                 {
                     recipeManager.AddRecipe(newRecipe);
+                    RecipeComboBox.ItemsSource = recipeManager.GetRecipes(); // Refresh ComboBox items
                     MessageBox.Show("Recipe added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -47,29 +50,66 @@ namespace RecipeManagerApp
         private void ClearData_Click(object sender, RoutedEventArgs e)
         {
             recipeManager.ClearData();
+            RecipeComboBox.ItemsSource = recipeManager.GetRecipes(); // Refresh ComboBox items
             OutputTextBlock.Text = "All data cleared.";
         }
 
         private void DisplayRecipe_Click(object sender, RoutedEventArgs e)
         {
-            string recipeName = RecipeNameTextBox.Text;
-            var recipe = recipeManager.GetRecipe(recipeName);
-            if (recipe != null)
+            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe recipe)
             {
                 OutputTextBlock.Text = ""; // Clear previous output
                 DisplayRecipeDetails(recipe);
             }
             else
             {
-                OutputTextBlock.Text = "Recipe not found.";
+                OutputTextBlock.Text = "Please select a recipe.";
             }
         }
 
         private void DeleteRecipe_Click(object sender, RoutedEventArgs e)
         {
-            string recipeName = RecipeNameTextBox.Text;
-            recipeManager.DeleteRecipe(recipeName);
-            OutputTextBlock.Text = $"Recipe '{recipeName}' deleted successfully.";
+            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe recipe)
+            {
+                recipeManager.DeleteRecipe(recipe.Name);
+                RecipeComboBox.ItemsSource = recipeManager.GetRecipes(); // Refresh ComboBox items
+                OutputTextBlock.Text = $"Recipe '{recipe.Name}' deleted successfully.";
+            }
+            else
+            {
+                OutputTextBlock.Text = "Please select a recipe.";
+            }
+        }
+
+        private void FilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            string ingredient = FilterIngredientTextBox.Text.ToLower();
+            string foodGroup = FilterFoodGroupTextBox.Text.ToLower();
+            double maxCalories;
+            double.TryParse(FilterMaxCaloriesTextBox.Text, out maxCalories);
+
+            var filteredRecipes = recipeManager.GetRecipes().Where(r =>
+                (string.IsNullOrEmpty(ingredient) || r.Ingredients.Any(i => i.Name.ToLower().Contains(ingredient))) &&
+                (string.IsNullOrEmpty(foodGroup) || r.Ingredients.Any(i => i.FoodGroup.ToLower().Contains(foodGroup))) &&
+                (maxCalories == 0 || r.TotalCalories <= maxCalories)).ToList();
+
+            OutputTextBlock.Text = ""; // Clear previous output
+            if (filteredRecipes.Count == 0)
+            {
+                OutputTextBlock.Text = "No recipes found.";
+            }
+            else
+            {
+                foreach (var recipe in filteredRecipes)
+                {
+                    DisplayRecipeDetails(recipe);
+                }
+            }
+        }
+
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown(); // Exit the application
         }
 
         private void DisplayRecipeDetails(RecipeManager.Recipe recipe)
@@ -87,6 +127,11 @@ namespace RecipeManagerApp
             }
             OutputTextBlock.Text += $"Total Calories: {recipe.TotalCalories}\n";
             OutputTextBlock.Text += "--------------------------------------------\n";
+        }
+
+        private void RecipeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            // Handle any additional actions when the selection changes, if needed
         }
     }
 }

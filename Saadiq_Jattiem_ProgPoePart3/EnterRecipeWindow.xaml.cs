@@ -9,6 +9,7 @@ namespace RecipeManagerApp
     public partial class EnterRecipeWindow : Window
     {
         private readonly RecipeManager recipeManager;
+        private readonly List<Ingredient> ingredients = new List<Ingredient>();
 
         public Recipe NewRecipe { get; private set; }
 
@@ -27,7 +28,7 @@ namespace RecipeManagerApp
                 string unit = IngredientUnitTextBox.Text;
                 string foodGroup = IngredientFoodGroupTextBox.Text;
 
-                var ingredient = new RecipeManager.Ingredient
+                var ingredient = new Ingredient
                 {
                     Name = name,
                     Quantity = quantity,
@@ -37,31 +38,13 @@ namespace RecipeManagerApp
                     FoodGroup = foodGroup
                 };
 
-                IngredientsListBox.Items.Add(ingredient);
+                ingredients.Add(ingredient);
+                IngredientsListBox.Items.Add($"{name}: {quantity} {unit}, {calories} Cal, {foodGroup}");
                 ClearIngredientFields();
             }
             else
             {
                 MessageBox.Show("Please enter valid quantity and calories.", "Input Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void NumberOfStepsTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            StepsListBox.Items.Clear(); // Clear previous input fields
-
-            if (int.TryParse(NumberOfStepsTextBox.Text, out int numberOfSteps))
-            {
-                for (int i = 0; i < numberOfSteps; i++)
-                {
-                    var stepTextBox = new TextBox
-                    {
-                        Margin = new Thickness(0, 5, 0, 0),
-                        Style = (Style)FindResource("PlaceholderTextBoxStyle"),
-                        Tag = $"Step {i + 1}"
-                    };
-                    StepsListBox.Items.Add(stepTextBox);
-                }
             }
         }
 
@@ -79,19 +62,12 @@ namespace RecipeManagerApp
             }
         }
 
-
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(RecipeNameTextBox.Text))
             {
                 MessageBox.Show("Please enter a recipe name.", "Input Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
-            }
-
-            var ingredients = new List<RecipeManager.Ingredient>();
-            foreach (var item in IngredientsListBox.Items)
-            {
-                ingredients.Add(item as RecipeManager.Ingredient);
             }
 
             // Collect steps from the ListBox
@@ -101,20 +77,7 @@ namespace RecipeManagerApp
                 steps.Add(item as string);
             }
 
-            int specifiedNumberOfSteps;
-            if (!int.TryParse(NumberOfStepsTextBox.Text, out specifiedNumberOfSteps))
-            {
-                MessageBox.Show("Please enter a valid number of steps.", "Input Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            if (steps.Count != specifiedNumberOfSteps)
-            {
-                MessageBox.Show($"Please enter {specifiedNumberOfSteps} steps.", "Input Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            var newRecipe = new RecipeManager.Recipe
+            var newRecipe = new Recipe
             {
                 Name = RecipeNameTextBox.Text,
                 Ingredients = ingredients,
@@ -127,7 +90,7 @@ namespace RecipeManagerApp
             Close();
         }
 
-        private double CalculateTotalCalories(List<RecipeManager.Ingredient> ingredients)
+        private double CalculateTotalCalories(List<Ingredient> ingredients)
         {
             double totalCalories = 0;
             foreach (var ingredient in ingredients)
