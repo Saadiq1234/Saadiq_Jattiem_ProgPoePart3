@@ -96,18 +96,26 @@ namespace RecipeManagerApp
         {
             OutputTextBlock.Text += $"Recipe: {recipe.Name}\n";
             OutputTextBlock.Text += "Ingredients:\n";
+
             foreach (var ingredient in recipe.Ingredients)
             {
-                OutputTextBlock.Text += $"{ingredient.Name}: {ingredient.Quantity} {ingredient.Unit}, {ingredient.Calories} Cal, {ingredient.FoodGroup}\n";
+                OutputTextBlock.Text += $"- {ingredient.Name}\n";
+                OutputTextBlock.Text += $"  Quantity: {ingredient.Quantity} {ingredient.Unit}\n";
+                OutputTextBlock.Text += $"  Calories: {ingredient.Calories} Cal\n";
+                OutputTextBlock.Text += $"  Food Group: {ingredient.FoodGroup}\n";
+                OutputTextBlock.Text += "\n";
             }
+
             OutputTextBlock.Text += "Steps:\n";
             foreach (var step in recipe.Steps)
             {
-                OutputTextBlock.Text += $"{step}\n";
+                OutputTextBlock.Text += $"- {step}\n";
             }
+
             OutputTextBlock.Text += $"Total Calories: {recipe.TotalCalories}\n";
             OutputTextBlock.Text += "--------------------------------------------\n";
         }
+
 
         private void RecipeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
