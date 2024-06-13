@@ -94,6 +94,26 @@ namespace RecipeManagerApp
             return totalCalories;
         }
 
+        private static readonly Dictionary<string, string> UnitConversions = new Dictionary<string, string>
+    {
+        { "grams", "kilograms" },
+        { "milliliters", "liters" },
+        { "teaspoons", "tablespoons" },
+        { "tablespoons", "cups" },
+        { "cups", "liters" },
+        // Add other conversions as needed
+    };
+
+        private static readonly Dictionary<string, double> ConversionFactors = new Dictionary<string, double>
+    {
+        { "grams", 1000.0 },
+        { "milliliters", 1000.0 },
+        { "teaspoons", 3.0 },
+        { "tablespoons", 16.0 },
+        { "cups", 4.22675 },
+        // Add other conversion factors as needed
+    };
+
         public void ScaleRecipe(string recipeName, double factor)
         {
             Recipe recipe = GetRecipe(recipeName);
@@ -102,6 +122,7 @@ namespace RecipeManagerApp
                 foreach (var ingredient in recipe.Ingredients)
                 {
                     ingredient.Quantity *= factor;
+                    ingredient.Unit = ConvertUnit(ingredient.Unit, factor);
                 }
 
                 recipe.TotalCalories = CalculateTotalCalories(recipe);
@@ -121,6 +142,22 @@ namespace RecipeManagerApp
                 Console.WriteLine("Recipe not found.");
                 Console.WriteLine();
             }
+        }
+
+        private string ConvertUnit(string unit, double factor)
+        {
+            if (UnitConversions.ContainsKey(unit) && factor != 1)
+            {
+                if (factor > 1 && ConversionFactors.ContainsKey(unit))
+                {
+                    return UnitConversions[unit];
+                }
+                else if (factor < 1 && ConversionFactors.ContainsValue(1 / factor))
+                {
+                    return UnitConversions.FirstOrDefault(x => x.Value == unit).Key;
+                }
+            }
+            return unit;
         }
 
 

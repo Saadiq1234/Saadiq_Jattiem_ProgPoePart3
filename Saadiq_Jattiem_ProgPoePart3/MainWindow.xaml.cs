@@ -94,7 +94,7 @@ namespace RecipeManagerApp
 
         private void DisplayRecipeDetails(Recipe recipe)
         {
-            OutputTextBlock.Text += $"Recipe: {recipe.Name}\n";
+            OutputTextBlock.Text = $"Recipe: {recipe.Name}\n";
             OutputTextBlock.Text += "Ingredients:\n";
 
             foreach (var ingredient in recipe.Ingredients)
