@@ -16,17 +16,37 @@ namespace RecipeManagerApp
             public List<Ingredient> Ingredients { get; set; }
             public List<string> Steps { get; set; }
             public double TotalCalories { get; set; }
+
+            public Recipe(string name, List<Ingredient> ingredients, List<string> steps)
+            {
+                Name = name;
+                Ingredients = ingredients;
+                Steps = steps;
+                TotalCalories = ingredients.Sum(i => i.Calories);
+            }
         }
 
         public class Ingredient
         {
             public string Name { get; set; }
             public double Quantity { get; set; }
-            public double OriginalQuantity { get; set; }
             public string Unit { get; set; }
-            public int Calories { get; set; }
+            public double Calories { get; set; }
             public string FoodGroup { get; set; }
+            public double OriginalQuantity { get; set; } // Add OriginalQuantity property
+
+            public Ingredient(string name, double quantity, string unit, double calories, string foodGroup)
+            {
+                Name = name;
+                Quantity = quantity;
+                Unit = unit;
+                Calories = calories;
+                FoodGroup = foodGroup;
+                OriginalQuantity = quantity; // Store the original quantity when initializing
+            }
         }
+
+
 
         private List<Recipe> recipes;
 
@@ -87,15 +107,13 @@ namespace RecipeManagerApp
                 }
 
                 recipe.TotalCalories = CalculateTotalCalories(recipe.Ingredients);
-                Console.WriteLine("Recipe scaled successfully.");
 
                 if (recipe.TotalCalories > 300)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Warning: Total calories of the recipe exceed 300 after scaling!");
-                    Console.ResetColor();
+                    CalorieExceeded?.Invoke(recipe.Name, recipe.TotalCalories);
                 }
 
+                Console.WriteLine("Recipe scaled successfully.");
                 Console.WriteLine();
             }
             else
@@ -107,8 +125,8 @@ namespace RecipeManagerApp
 
         private string ConvertUnit(string unit, double factor)
         {
-            // Implement unit conversion logic here
-            return unit; // Placeholder, implement actual conversion as needed
+            // Implement unit conversion logic here if needed
+            return unit;
         }
 
         public void ResetQuantities(string recipeName)
@@ -122,6 +140,7 @@ namespace RecipeManagerApp
                 }
 
                 recipe.TotalCalories = CalculateTotalCalories(recipe.Ingredients);
+
                 Console.WriteLine("Quantities reset to original values.");
                 Console.WriteLine();
             }
@@ -188,10 +207,5 @@ namespace RecipeManagerApp
                 Console.WriteLine();
             }
         }
-        public void DeleteRecipe(Recipe recipe)
-        {
-            recipes.Remove(recipe);
-        }
-
     }
 }

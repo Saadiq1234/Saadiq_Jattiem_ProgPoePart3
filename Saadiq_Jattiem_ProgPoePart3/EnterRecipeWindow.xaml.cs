@@ -28,15 +28,7 @@ namespace RecipeManagerApp
                 string unit = IngredientUnitTextBox.Text;
                 string foodGroup = selectedFoodGroup.Content.ToString();
 
-                var ingredient = new Ingredient
-                {
-                    Name = name,
-                    Quantity = quantity,
-                    OriginalQuantity = quantity,
-                    Unit = unit,
-                    Calories = calories,
-                    FoodGroup = foodGroup
-                };
+                var ingredient = new Ingredient(name, quantity, unit, calories, foodGroup);
 
                 ingredients.Add(ingredient);
                 IngredientsListBox.Items.Add($"{name}: {quantity} {unit}, {calories} Cal, {foodGroup}");
@@ -47,6 +39,7 @@ namespace RecipeManagerApp
                 MessageBox.Show("Please enter valid quantity, calories, and select a food group.", "Input Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
         private void AddStepButton_Click(object sender, RoutedEventArgs e)
         {
@@ -77,11 +70,8 @@ namespace RecipeManagerApp
                 steps.Add(item as string);
             }
 
-            var newRecipe = new Recipe
+            var newRecipe = new Recipe(RecipeNameTextBox.Text, ingredients, steps)
             {
-                Name = RecipeNameTextBox.Text,
-                Ingredients = ingredients,
-                Steps = steps,
                 TotalCalories = recipeManager.CalculateTotalCalories(ingredients)
             };
 
@@ -89,6 +79,7 @@ namespace RecipeManagerApp
             DialogResult = true;
             Close();
         }
+
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
