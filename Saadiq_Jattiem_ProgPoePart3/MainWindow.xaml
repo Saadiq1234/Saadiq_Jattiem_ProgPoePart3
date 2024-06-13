@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Recipe Manager" Height="450" Width="800">
     <Window.Resources>
+        <!-- Style for PlaceholderTextBox -->
         <Style x:Key="PlaceholderTextBoxStyle" TargetType="TextBox">
             <Setter Property="Template">
                 <Setter.Value>
@@ -15,7 +16,7 @@
                                      VerticalContentAlignment="Center"
                                      HorizontalContentAlignment="Left"/>
                             <TextBlock x:Name="Placeholder"
-                                       Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
+                                       Text="{TemplateBinding Tag}"
                                        Foreground="Gray"
                                        Margin="5,0,0,0"
                                        VerticalAlignment="Center"
@@ -45,40 +46,47 @@
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
+        <!-- Left Column - Controls -->
         <StackPanel Grid.Column="0" VerticalAlignment="Top">
             <TextBlock Text="Recipe Manager" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
 
-            <Button Content="Enter Recipe Details" Click="EnterRecipeDetails_Click" Margin="5"/>
-            <Button Content="Display All Recipes" Click="DisplayAllRecipes_Click" Margin="5"/>
-            <Button Content="Clear Data" Click="ClearData_Click" Margin="5"/>
-            <Button Content="Exit" Click="ExitButton_Click" Margin="5"/>
-
-            <StackPanel Margin="5">
-                <ComboBox x:Name="RecipeComboBox" Width="200" Margin="0,5,0,0" Text="display specific recipe">
-                    <ComboBox.Background>
-                        <LinearGradientBrush EndPoint="0,1">
-                            <GradientStop Color="#FFF0F0F0"/>
-                            <GradientStop Color="#FF1F50CA" Offset="1"/>
-                        </LinearGradientBrush>
-                    </ComboBox.Background>
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-                <Button Content="Display Specific Recipe" Click="DisplayRecipe_Click" Margin="0,5,0,0"/>
+            <!-- Operational Buttons -->
+            <StackPanel Margin="5,0,0,10">
+                <Button Content="Enter Recipe Details" Click="EnterRecipeDetails_Click" Margin="0,0,0,5"/>
+                <Button Content="Display All Recipes" Click="DisplayAllRecipes_Click" Margin="0,0,0,5"/>
+                <Button Content="Clear Data" Click="ClearData_Click" Margin="0,0,0,5"/>
+                <Button Content="Exit" Click="ExitButton_Click" Margin="0,0,0,5"/>
             </StackPanel>
 
-            <TextBlock Text="Filter Recipes" FontWeight="Bold" Margin="5"/>
-            <TextBox x:Name="FilterIngredientTextBox" Width="200" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Ingredient Name"/>
-            <TextBox x:Name="FilterFoodGroupTextBox" Width="200" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Food Group"/>
-            <TextBox x:Name="FilterMaxCaloriesTextBox" Width="200" Margin="5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Max Calories"/>
-            <Button Content="Filter" Click="FilterButton_Click" Margin="5"/>
+            <!-- ComboBox for recipe selection -->
+            <ComboBox x:Name="RecipeComboBox" Width="200" Margin="5,10,0,0" DisplayMemberPath="Name" SelectionChanged="RecipeComboBox_SelectionChanged"
+                      ToolTip="Select a recipe to display its details">
+                <ComboBox.Background>
+                    <LinearGradientBrush EndPoint="0,1">
+                        <GradientStop Color="#FFF0F0F0"/>
+                        <GradientStop Color="#FF1F50CA" Offset="1"/>
+                    </LinearGradientBrush>
+                </ComboBox.Background>
+            </ComboBox>
+
+            <!-- Filter controls -->
+            <TextBlock Text="Filter Recipes" FontWeight="Bold" Margin="5,20,0,5"/>
+            <TextBox x:Name="FilterIngredientTextBox" Width="200" Margin="5,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Ingredient Name"/>
+            <TextBox x:Name="FilterFoodGroupTextBox" Width="200" Margin="5,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Food Group"/>
+            <TextBox x:Name="FilterMaxCaloriesTextBox" Width="200" Margin="5,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Max Calories"/>
+            <Button Content="Filter" Click="FilterButton_Click" Margin="5,0,0,10"/>
+
+            <!-- Reset and Scale buttons -->
+            <StackPanel Margin="5,20,0,0">
+                <TextBox x:Name="ScaleFactorTextBox" Placeholder="Enter scaling factor" Margin="5"/>
+                <Button x:Name="ScaleButton" Content="Scale Recipe" Click="ScaleButton_Click" Margin="5"/>
+                <Button Content="Reset" Click="ResetButton_Click" Margin="5,5,5,0"/>
+            </StackPanel>
         </StackPanel>
 
+        <!-- Right Column - Output area -->
         <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Padding="10">
-            <ScrollViewer Margin="10">
+            <ScrollViewer>
                 <TextBlock x:Name="OutputTextBlock" TextWrapping="Wrap"/>
             </ScrollViewer>
         </Border>

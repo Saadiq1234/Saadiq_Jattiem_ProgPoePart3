@@ -93,35 +93,24 @@ namespace RecipeManagerApp
             return totalCalories;
         }
 
-        public void ScaleRecipe(string recipeName)
+        public void ScaleRecipe(string recipeName, double factor)
         {
             Recipe recipe = GetRecipe(recipeName);
             if (recipe != null)
             {
-                Console.Write("Enter the scaling factor (0.5, 2, or 3): ");
-                double factor = double.Parse(Console.ReadLine());
-                Console.WriteLine();
-
-                if (factor == 0.5 || factor == 2 || factor == 3)
+                foreach (var ingredient in recipe.Ingredients)
                 {
-                    foreach (var ingredient in recipe.Ingredients)
-                    {
-                        ingredient.Quantity *= factor;
-                    }
-
-                    recipe.TotalCalories = CalculateTotalCalories(recipe);
-                    Console.WriteLine("Recipe scaled successfully.");
-
-                    if (recipe.TotalCalories > 300)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Warning: Total calories of the recipe exceed 300 after scaling!");
-                        Console.ResetColor();
-                    }
+                    ingredient.Quantity *= factor;
                 }
-                else
+
+                recipe.TotalCalories = CalculateTotalCalories(recipe);
+                Console.WriteLine("Recipe scaled successfully.");
+
+                if (recipe.TotalCalories > 300)
                 {
-                    Console.WriteLine("Invalid scaling factor. Recipe scaling failed.");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Warning: Total calories of the recipe exceed 300 after scaling!");
+                    Console.ResetColor();
                 }
 
                 Console.WriteLine();
@@ -132,6 +121,7 @@ namespace RecipeManagerApp
                 Console.WriteLine();
             }
         }
+
 
         public void ResetQuantities(string recipeName)
         {

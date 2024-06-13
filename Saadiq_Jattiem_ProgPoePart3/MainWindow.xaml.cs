@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace RecipeManagerApp
 {
@@ -11,16 +13,8 @@ namespace RecipeManagerApp
         {
             InitializeComponent();
             recipeManager = new RecipeManager();
-            recipeManager.CalorieExceeded += RecipeManager_CalorieExceeded;
-            RecipeComboBox.ItemsSource = recipeManager.GetRecipes();
-        }
-
-        private void RecipeManager_CalorieExceeded(string recipeName, double totalCalories)
-        {
-            if (totalCalories > 300)
-            {
-                MessageBox.Show($"Warning: Total calories of {recipeName} exceed 300!", "Calorie Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+            recipeManager.CalorieExceeded += RecipeManager_CalorieExceeded; // Subscribe to calorie exceeded event
+            RefreshRecipeComboBox(); // Ensure ComboBox is populated initially
         }
 
         private void EnterRecipeDetails_Click(object sender, RoutedEventArgs e)
@@ -32,7 +26,7 @@ namespace RecipeManagerApp
                 if (newRecipe != null)
                 {
                     recipeManager.AddRecipe(newRecipe);
-                    RecipeComboBox.ItemsSource = recipeManager.GetRecipes(); // Refresh ComboBox items
+                    RefreshRecipeComboBox(); // Refresh ComboBox after adding a recipe
                     MessageBox.Show("Recipe added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -50,7 +44,7 @@ namespace RecipeManagerApp
         private void ClearData_Click(object sender, RoutedEventArgs e)
         {
             recipeManager.ClearData();
-            RecipeComboBox.ItemsSource = recipeManager.GetRecipes(); // Refresh ComboBox items
+            RefreshRecipeComboBox();
             OutputTextBlock.Text = "All data cleared.";
         }
 
@@ -63,21 +57,7 @@ namespace RecipeManagerApp
             }
             else
             {
-                OutputTextBlock.Text = "Please select a recipe.";
-            }
-        }
-
-        private void DeleteRecipe_Click(object sender, RoutedEventArgs e)
-        {
-            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe recipe)
-            {
-                recipeManager.DeleteRecipe(recipe.Name);
-                RecipeComboBox.ItemsSource = recipeManager.GetRecipes(); // Refresh ComboBox items
-                OutputTextBlock.Text = $"Recipe '{recipe.Name}' deleted successfully.";
-            }
-            else
-            {
-                OutputTextBlock.Text = "Please select a recipe.";
+                OutputTextBlock.Text = "Please select a recipe from the ComboBox.";
             }
         }
 
@@ -86,15 +66,15 @@ namespace RecipeManagerApp
             string ingredient = FilterIngredientTextBox.Text.ToLower();
             string foodGroup = FilterFoodGroupTextBox.Text.ToLower();
             double maxCalories;
-            double.TryParse(FilterMaxCaloriesTextBox.Text, out maxCalories);
+            bool isMaxCaloriesValid = double.TryParse(FilterMaxCaloriesTextBox.Text, out maxCalories);
 
             var filteredRecipes = recipeManager.GetRecipes().Where(r =>
-                (string.IsNullOrEmpty(ingredient) || r.Ingredients.Any(i => i.Name.ToLower().Contains(ingredient))) &&
-                (string.IsNullOrEmpty(foodGroup) || r.Ingredients.Any(i => i.FoodGroup.ToLower().Contains(foodGroup))) &&
-                (maxCalories == 0 || r.TotalCalories <= maxCalories)).ToList();
+                (string.IsNullOrEmpty(ingredient) || r.Ingredients.Exists(i => i.Name.ToLower().Contains(ingredient))) &&
+                (string.IsNullOrEmpty(foodGroup) || r.Ingredients.Exists(i => i.FoodGroup.ToLower().Contains(foodGroup))) &&
+                (!isMaxCaloriesValid || r.TotalCalories <= maxCalories));
 
             OutputTextBlock.Text = ""; // Clear previous output
-            if (filteredRecipes.Count == 0)
+            if (!filteredRecipes.Any())
             {
                 OutputTextBlock.Text = "No recipes found.";
             }
@@ -129,9 +109,70 @@ namespace RecipeManagerApp
             OutputTextBlock.Text += "--------------------------------------------\n";
         }
 
-        private void RecipeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void RecipeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Handle any additional actions when the selection changes, if needed
+            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe selectedRecipe)
+            {
+                OutputTextBlock.Text = ""; // Clear previous output
+                DisplayRecipeDetails(selectedRecipe);
+            }
+        }
+
+        private void RefreshRecipeComboBox()
+        {
+            RecipeComboBox.ItemsSource = null; // Clear current items source
+            RecipeComboBox.ItemsSource = recipeManager.GetRecipes(); // Refresh with updated list
+        }
+
+        private void RecipeManager_CalorieExceeded(string recipeName, double totalCalories)
+        {
+            if (totalCalories > 300)
+            {
+                MessageBox.Show($"Warning: Total calories of recipe '{recipeName}' exceed 300!", "Calorie Exceeded", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void ScaleButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe selectedRecipe)
+            {
+                if (double.TryParse(ScaleFactorTextBox.Text, out double factor))
+                {
+                    if (factor == 0.5 || factor == 2 || factor == 3)
+                    {
+                        recipeManager.ScaleRecipe(selectedRecipe.Name, factor);
+                        OutputTextBlock.Text = ""; // Clear previous output
+                        DisplayRecipeDetails(selectedRecipe); // Display updated recipe details
+                    }
+                    else
+                    {
+                        OutputTextBlock.Text = "Invalid scaling factor. Please enter 0.5, 2, or 3.";
+                    }
+                }
+                else
+                {
+                    OutputTextBlock.Text = "Invalid input. Please enter a valid number.";
+                }
+            }
+            else
+            {
+                OutputTextBlock.Text = "Please select a recipe from the ComboBox.";
+            }
+        }
+
+
+        private void ResetButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe selectedRecipe)
+            {
+                recipeManager.ResetQuantities(selectedRecipe.Name);
+                OutputTextBlock.Text = ""; // Clear previous output
+                DisplayRecipeDetails(selectedRecipe); // Display updated recipe details
+            }
+            else
+            {
+                OutputTextBlock.Text = "Please select a recipe from the ComboBox.";
+            }
         }
     }
 }
