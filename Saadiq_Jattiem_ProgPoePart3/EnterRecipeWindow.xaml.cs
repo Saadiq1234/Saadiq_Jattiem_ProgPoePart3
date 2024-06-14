@@ -9,6 +9,7 @@ namespace RecipeManagerApp
     {
         private readonly RecipeManager recipeManager;
         private readonly List<Ingredient> ingredients = new List<Ingredient>();
+        private int stepCounter = 1; // Step counter for numbering steps
 
         public Recipe NewRecipe { get; private set; }
 
@@ -40,13 +41,14 @@ namespace RecipeManagerApp
             }
         }
 
-
         private void AddStepButton_Click(object sender, RoutedEventArgs e)
         {
             string step = StepTextBox.Text;
             if (!string.IsNullOrWhiteSpace(step))
             {
-                StepsListBox.Items.Add(step); // Add step to the ListBox
+                // Add step with numbering
+                StepsListBox.Items.Add($"Step {stepCounter}: {step}");
+                stepCounter++; // Increment step counter for the next step
                 StepTextBox.Clear();
             }
             else
@@ -70,7 +72,7 @@ namespace RecipeManagerApp
                 steps.Add(item as string);
             }
 
-            var newRecipe = new Recipe(RecipeNameTextBox.Text, ingredients, steps)
+            var newRecipe = new Recipe(RecipeNameTextBox.Text, ingredients, steps, recipeManager)
             {
                 TotalCalories = recipeManager.CalculateTotalCalories(ingredients)
             };
@@ -79,7 +81,6 @@ namespace RecipeManagerApp
             DialogResult = true;
             Close();
         }
-
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {

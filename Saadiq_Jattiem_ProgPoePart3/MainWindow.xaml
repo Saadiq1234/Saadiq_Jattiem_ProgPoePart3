@@ -12,11 +12,11 @@
                             <TextBox x:Name="PART_TextBox"
                                      Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      Background="Transparent"
-                                     BorderThickness="0"
+                                     BorderThickness="1"
+                                     BorderBrush="Gray"
                                      VerticalContentAlignment="Center"
                                      HorizontalContentAlignment="Left"
                                      Padding="5"/>
-
                             <TextBlock x:Name="Placeholder"
                                        Text="{TemplateBinding Tag}"
                                        Foreground="Gray"
@@ -28,24 +28,11 @@
                         <ControlTemplate.Triggers>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
-                                    <Condition Property="Text" Value="" />
-                                    <Condition Property="IsKeyboardFocused" Value="False" />
+                                    <Condition Property="Text" Value=""/>
+                                    <Condition Property="IsKeyboardFocused" Value="False"/>
                                 </MultiTrigger.Conditions>
                                 <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
                             </MultiTrigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="Text" Value="{x:Null}" />
-                                    <Condition Property="IsKeyboardFocused" Value="False" />
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
-                            </MultiTrigger>
-                            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
-                                <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
-                                <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
                             <Trigger Property="Text" Value="{x:Null}">
                                 <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
                             </Trigger>
@@ -56,6 +43,13 @@
             <Setter Property="Padding" Value="5"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="Gray"/>
+        </Style>
+
+        <!-- Style for Buttons -->
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="150"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
         </Style>
     </Window.Resources>
     <Grid Margin="10">
@@ -70,15 +64,16 @@
 
             <!-- Operational Buttons -->
             <StackPanel Margin="5,0,0,10">
-                <Button Content="Enter Recipe Details" Click="EnterRecipeDetails_Click" Margin="0,0,0,5"/>
-                <Button Content="Display All Recipes" Click="DisplayAllRecipes_Click" Margin="0,0,0,5"/>
-                <Button Content="Clear Data" Click="ClearData_Click" Margin="0,0,0,5"/>
-                <Button Content="Delete Recipe" Click="DeleteRecipe_Click" Margin="0,0,0,5"/>
+                <Button Content="Enter Recipe Details" Click="EnterRecipeDetails_Click" Style="{StaticResource ButtonStyle}"/>
+                <Button Content="Display All Recipes" Click="DisplayAllRecipes_Click" Style="{StaticResource ButtonStyle}"/>
+                <Button Content="Clear Data" Click="ClearData_Click" Style="{StaticResource ButtonStyle}"/>
+                <Button Content="Delete Recipe" Click="DeleteRecipe_Click" Style="{StaticResource ButtonStyle}"/>
             </StackPanel>
 
             <!-- ComboBox for recipe selection with label -->
             <TextBlock Text="Display a Specific Recipe:" FontWeight="Bold" Margin="5,10,0,5"/>
-            <ComboBox x:Name="RecipeComboBox" Width="200" Margin="5,0,0,10" DisplayMemberPath="Name" SelectionChanged="RecipeComboBox_SelectionChanged"
+            <ComboBox x:Name="RecipeComboBox" Width="200" DisplayMemberPath="Name" SelectedValuePath="Name"
+                      SelectionChanged="RecipeComboBox_SelectionChanged"
                       ToolTip="Select a recipe to display its details">
                 <ComboBox.Background>
                     <LinearGradientBrush EndPoint="0,1">
@@ -90,20 +85,28 @@
 
             <!-- Filter controls -->
             <TextBlock Text="Filter Recipes" FontWeight="Bold" Margin="5,20,0,5"/>
-            <TextBox x:Name="FilterIngredientTextBox" Width="200" Margin="5,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Ingredient Name"/>
-            <TextBox x:Name="FilterFoodGroupTextBox" Width="200" Margin="5,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Food Group"/>
-            <TextBox x:Name="FilterMaxCaloriesTextBox" Width="200" Margin="5,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Max Calories"/>
-            <Button Content="Filter" Click="FilterButton_Click" Margin="5,0,0,10"/>
+            <StackPanel Margin="5,0,0,10">
+                <TextBlock Text="Ingredient Name" Margin="0,0,0,5"/>
+                <TextBox x:Name="FilterIngredientTextBox" Width="200" Margin="0,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" BorderThickness="1" BorderBrush="Gray" />
+
+                <TextBlock Text="Food Group" Margin="0,0,0,5"/>
+                <TextBox x:Name="FilterFoodGroupTextBox" Width="200" Margin="0,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" BorderThickness="1" BorderBrush="Gray" />
+
+                <TextBlock Text="Max Calories" Margin="0,0,0,5"/>
+                <TextBox x:Name="FilterMaxCaloriesTextBox" Width="200" Margin="0,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" BorderThickness="1" BorderBrush="Gray" />
+
+                <Button Content="Filter" Click="FilterButton_Click" Style="{StaticResource ButtonStyle}"/>
+            </StackPanel>
 
             <!-- Reset and Scale controls -->
             <StackPanel Margin="5,20,0,0">
-                <TextBox x:Name="ScaleFactorTextBox" Tag="Enter scaling factor" Margin="5"/>
+                <TextBox x:Name="ScaleFactorTextBox" Text="{Binding Path=CurrentScaleFactor, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}" Tag="Enter scaling factor" Margin="5" BorderThickness="1" BorderBrush="Gray" />
                 <CheckBox Content="0.5x" Name="ScaleFactor05CheckBox" Checked="ScaleFactor05CheckBox_Checked" Unchecked="ScaleFactor05CheckBox_Unchecked" Margin="5"/>
                 <CheckBox Content="2x" Name="ScaleFactor2CheckBox" Checked="ScaleFactor2CheckBox_Checked" Unchecked="ScaleFactor2CheckBox_Unchecked" Margin="5"/>
                 <CheckBox Content="3x" Name="ScaleFactor3CheckBox" Checked="ScaleFactor3CheckBox_Checked" Unchecked="ScaleFactor3CheckBox_Unchecked" Margin="5"/>
-                <Button x:Name="ScaleButton" Content="Scale Recipe" Click="ScaleButton_Click" Margin="5"/>
-                <Button Content="Reset" Click="ResetButton_Click" Margin="5,5,5,0"/>
-                <Button Content="Exit" Click="ExitButton_Click" Margin="0,0,0,5"/>
+                <Button x:Name="ScaleButton" Content="Scale Recipe" Click="ScaleButton_Click" Style="{StaticResource ButtonStyle}" Margin="5,0,0,0"/>
+                <Button Content="Reset" Click="ResetButton_Click" Style="{StaticResource ButtonStyle}" Margin="5,5,5,0"/>
+                <Button Content="Exit" Click="ExitButton_Click" Style="{StaticResource ButtonStyle}" Margin="0,0,0,5"/>
             </StackPanel>
         </StackPanel>
 

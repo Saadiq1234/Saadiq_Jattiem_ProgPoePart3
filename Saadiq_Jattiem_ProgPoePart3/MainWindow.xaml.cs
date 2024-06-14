@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using RecipeManagerApp;
+using static RecipeManagerApp.RecipeManager;
 
 namespace RecipeManagerApp
 {
@@ -28,12 +29,13 @@ namespace RecipeManagerApp
                 if (newRecipe != null)
                 {
                     recipeManager.AddRecipe(newRecipe);
-                    RefreshRecipeComboBox(); // Refresh ComboBox after adding a recipe
                     MessageBox.Show("Recipe added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
-        }
 
+            // Always refresh ComboBox after adding a recipe
+            RefreshRecipeComboBox();
+        }
         private void DisplayAllRecipes_Click(object sender, RoutedEventArgs e)
         {
             OutputTextBlock.Text = "";  // Clear previous output
@@ -50,13 +52,15 @@ namespace RecipeManagerApp
         private void ClearData_Click(object sender, RoutedEventArgs e)
         {
             recipeManager.ClearData();
-            RefreshRecipeComboBox(); // Clear and refresh the ComboBox
             OutputTextBlock.Text = "All data cleared.";
+
+            // Always refresh ComboBox after clearing data
+            RefreshRecipeComboBox();
         }
 
         private void DisplayRecipe_Click(object sender, RoutedEventArgs e)
         {
-            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe selectedRecipe)
+            if (RecipeComboBox.SelectedItem is Recipe selectedRecipe)
             {
                 OutputTextBlock.Text = ""; // Clear previous output
                 DisplayRecipeDetails(selectedRecipe);
@@ -79,14 +83,19 @@ namespace RecipeManagerApp
                 (string.IsNullOrEmpty(foodGroup) || r.Ingredients.Any(i => i.FoodGroup.ToLower().Contains(foodGroup))) &&
                 (!isMaxCaloriesValid || r.TotalCalories <= maxCalories)).OrderBy(r => r.Name).ToList(); // Sort filtered recipes by name
 
+            OutputTextBlock.Text = ""; // Clear previous output
+
             if (filteredRecipes.Any())
             {
-                var filteredRecipesWindow = new FilteredRecipesWindow(filteredRecipes);
-                filteredRecipesWindow.Show();
+                foreach (var recipe in filteredRecipes)
+                {
+                    DisplayRecipeDetails(recipe);
+                    OutputTextBlock.Text += "--------------------------------------------\n";
+                }
             }
             else
             {
-                MessageBox.Show("No recipes found.", "Filter Results", MessageBoxButton.OK, MessageBoxImage.Information);
+                OutputTextBlock.Text = "No recipes found.";
             }
         }
 
@@ -95,7 +104,7 @@ namespace RecipeManagerApp
             Application.Current.Shutdown(); // Exit the application
         }
 
-        private void DisplayRecipeDetails(RecipeManager.Recipe recipe)
+        private void DisplayRecipeDetails(Recipe recipe)
         {
             OutputTextBlock.Text += $"Recipe: {recipe.Name}\n";
             OutputTextBlock.Text += "Ingredients:\n";
@@ -119,21 +128,21 @@ namespace RecipeManagerApp
             OutputTextBlock.Text += "--------------------------------------------\n";
         }
 
+        private void RefreshRecipeComboBox()
+        {
+            RecipeComboBox.ItemsSource = null; // Clear the ItemsSource first (optional)
+            var recipes = recipeManager.GetRecipes().OrderBy(r => r.Name).ToList();
+            RecipeComboBox.ItemsSource = recipes;
+            RecipeComboBox.DisplayMemberPath = "Name"; // Ensure DisplayMemberPath is set correctly
+        }
+
         private void RecipeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe selectedRecipe)
+            if (RecipeComboBox.SelectedItem is Recipe selectedRecipe)
             {
                 OutputTextBlock.Text = ""; // Clear previous output
                 DisplayRecipeDetails(selectedRecipe); // Display selected recipe details
             }
-        }
-
-        private void RefreshRecipeComboBox()
-        {
-            var recipes = recipeManager.GetRecipes().OrderBy(r => r.Name).ToList(); // Sort recipes by name
-            RecipeComboBox.ItemsSource = null; // Clear current items source
-            RecipeComboBox.ItemsSource = recipes; // Set ComboBox items to current recipes sorted alphabetically
-            RecipeComboBox.DisplayMemberPath = nameof(RecipeManager.Recipe.Name); // Ensure the ComboBox displays recipe names
         }
 
         private void RecipeManager_CalorieExceeded(string recipeName, double totalCalories)
@@ -146,19 +155,27 @@ namespace RecipeManagerApp
 
         private void ScaleButton_Click(object sender, RoutedEventArgs e)
         {
-            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe selectedRecipe)
+            if (RecipeComboBox.SelectedItem is Recipe selectedRecipe)
             {
-                // Ask for confirmation
-                MessageBoxResult result = MessageBox.Show($"Are you sure you want to scale the recipe '{selectedRecipe.Name}'?",
-                                                          "Confirm Scale Recipe", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var updatedRecipe = recipeManager.GetRecipe(selectedRecipe.Name);
 
-                if (result == MessageBoxResult.Yes)
+                if (updatedRecipe != null)
                 {
-                    recipeManager.ScaleRecipe(selectedRecipe.Name, currentScaleFactor);
-                    OutputTextBlock.Text = ""; // Clear previous output
-                    DisplayRecipeDetails(selectedRecipe); // Display updated recipe details
+                    // Ask for confirmation
+                    MessageBoxResult result = MessageBox.Show($"Are you sure you want to scale the recipe '{updatedRecipe.Name}'?",
+                                                              "Confirm Scale Recipe", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        recipeManager.ScaleRecipe(updatedRecipe.Name, currentScaleFactor);
+                        OutputTextBlock.Text = ""; // Clear previous output
+                        DisplayRecipeDetails(updatedRecipe); // Display updated recipe details
+                    }
                 }
-                // No action needed if 'No' is selected in the message box
+                else
+                {
+                    OutputTextBlock.Text = "Recipe not found.";
+                }
             }
             else
             {
@@ -168,7 +185,7 @@ namespace RecipeManagerApp
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
-            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe selectedRecipe)
+            if (RecipeComboBox.SelectedItem is Recipe selectedRecipe)
             {
                 recipeManager.ResetQuantities(selectedRecipe.Name);
                 OutputTextBlock.Text = ""; // Clear previous output
@@ -182,13 +199,12 @@ namespace RecipeManagerApp
 
         private void DeleteRecipe_Click(object sender, RoutedEventArgs e)
         {
-            if (RecipeComboBox.SelectedItem is RecipeManager.Recipe selectedRecipe)
+            if (RecipeComboBox.SelectedItem is Recipe selectedRecipe)
             {
                 MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete '{selectedRecipe.Name}' recipe?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
-                    recipeManager.DeleteRecipe(selectedRecipe.Name); // Pass recipe name
-                    RefreshRecipeComboBox(); // Refresh ComboBox after deleting a recipe
+                    recipeManager.DeleteRecipe(selectedRecipe.Name);
                     OutputTextBlock.Text = $"Recipe '{selectedRecipe.Name}' deleted successfully.";
                 }
             }
@@ -196,6 +212,9 @@ namespace RecipeManagerApp
             {
                 MessageBox.Show("Please select a recipe to delete.", "Delete Recipe", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+
+            // Always refresh ComboBox after deleting a recipe
+            RefreshRecipeComboBox();
         }
 
         private void ScaleFactor05CheckBox_Checked(object sender, RoutedEventArgs e)
