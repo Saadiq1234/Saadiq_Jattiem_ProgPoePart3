@@ -93,14 +93,7 @@
                     <!-- Filter controls -->
                     <TextBlock Text="Filter Recipes" FontWeight="Bold" Margin="5,20,0,5" Foreground="DarkSlateBlue"/>
                     <StackPanel Margin="5,0,0,10">
-                        <TextBlock Text="Ingredient Name" Margin="0,0,0,5" Foreground="DarkSlateBlue"/>
-                        <TextBox x:Name="FilterIngredientTextBox" Width="200" Margin="0,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" BorderThickness="1" BorderBrush="Gray" />
-
-                        <TextBlock Text="Food Group" Margin="0,0,0,5" Foreground="DarkSlateBlue"/>
-                        <TextBox x:Name="FilterFoodGroupTextBox" Width="200" Margin="0,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" BorderThickness="1" BorderBrush="Gray" />
-
-                        <TextBlock Text="Max Calories" Margin="0,0,0,5" Foreground="DarkSlateBlue"/>
-                        <TextBox x:Name="FilterMaxCaloriesTextBox" Width="200" Margin="0,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" BorderThickness="1" BorderBrush="Gray" />
+                        
 
                         <Button Content="Filter" Click="FilterButton_Click" Style="{StaticResource ButtonStyle}"/>
                     </StackPanel>

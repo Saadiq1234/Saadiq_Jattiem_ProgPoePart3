@@ -11,6 +11,7 @@ namespace RecipeManagerApp
     {
         private RecipeManager recipeManager;
         private double currentScaleFactor = 1.0;
+        private FilterWindow filterWindow;
 
         public MainWindow()
         {
@@ -70,34 +71,53 @@ namespace RecipeManagerApp
                 OutputTextBlock.Text = "Please select a recipe from the ComboBox.";
             }
         }
-
         private void FilterButton_Click(object sender, RoutedEventArgs e)
         {
-            string ingredient = FilterIngredientTextBox.Text.ToLower();
-            string foodGroup = FilterFoodGroupTextBox.Text.ToLower();
-            double maxCalories;
-            bool isMaxCaloriesValid = double.TryParse(FilterMaxCaloriesTextBox.Text, out maxCalories);
+            filterWindow = new FilterWindow();
+            bool? result = filterWindow.ShowDialog();
 
-            var filteredRecipes = recipeManager.GetRecipes().Where(r =>
-                (string.IsNullOrEmpty(ingredient) || r.Ingredients.Any(i => i.Name.ToLower().Contains(ingredient))) &&
-                (string.IsNullOrEmpty(foodGroup) || r.Ingredients.Any(i => i.FoodGroup.ToLower().Contains(foodGroup))) &&
-                (!isMaxCaloriesValid || r.TotalCalories <= maxCalories)).OrderBy(r => r.Name).ToList(); // Sort filtered recipes by name
-
-            OutputTextBlock.Text = ""; // Clear previous output
-
-            if (filteredRecipes.Any())
+            if (result == true)
             {
-                foreach (var recipe in filteredRecipes)
+                RefreshFilteredRecipes(); // Apply filter logic based on FilterWindow results
+            }
+        }
+
+        private void RefreshFilteredRecipes()
+        {
+            // Check if filterWindow is not null before accessing its properties
+            if (filterWindow != null)
+            {
+                string ingredient = filterWindow.FilterIngredientTextBox.Text.ToLower();
+                string foodGroup = filterWindow.FilterFoodGroupTextBox.Text.ToLower();
+                double maxCalories;
+                bool isMaxCaloriesValid = double.TryParse(filterWindow.FilterMaxCaloriesTextBox.Text, out maxCalories);
+
+                var filteredRecipes = recipeManager.GetRecipes().Where(r =>
+                    (string.IsNullOrEmpty(ingredient) || r.Ingredients.Any(i => i.Name.ToLower().Contains(ingredient))) &&
+                    (string.IsNullOrEmpty(foodGroup) || r.Ingredients.Any(i => i.FoodGroup.ToLower().Contains(foodGroup))) &&
+                    (!isMaxCaloriesValid || r.TotalCalories <= maxCalories)).OrderBy(r => r.Name).ToList();
+
+                OutputTextBlock.Text = ""; // Clear previous output
+
+                if (filteredRecipes.Any())
                 {
-                    DisplayRecipeDetails(recipe);
-                    OutputTextBlock.Text += "--------------------------------------------\n";
+                    foreach (var recipe in filteredRecipes)
+                    {
+                        DisplayRecipeDetails(recipe);
+                        OutputTextBlock.Text += "--------------------------------------------\n";
+                    }
+                }
+                else
+                {
+                    OutputTextBlock.Text = "No recipes found.";
                 }
             }
             else
             {
-                OutputTextBlock.Text = "No recipes found.";
+                MessageBox.Show("Filter window is not initialized.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
