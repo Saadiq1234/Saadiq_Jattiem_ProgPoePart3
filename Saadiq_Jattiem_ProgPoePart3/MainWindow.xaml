@@ -11,7 +11,7 @@
                         <Grid>
                             <TextBox x:Name="PART_TextBox"
                                      Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     Background="Transparent"
+                                     Background="LightYellow"
                                      BorderThickness="1"
                                      BorderBrush="Gray"
                                      VerticalContentAlignment="Center"
@@ -50,71 +50,80 @@
             <Setter Property="Width" Value="150"/>
             <Setter Property="Height" Value="30"/>
             <Setter Property="Margin" Value="0,0,0,5"/>
+            <Setter Property="Background" Value="LightSkyBlue"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="BorderThickness" Value="1"/>
         </Style>
     </Window.Resources>
-    <Grid Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="3*"/>
-        </Grid.ColumnDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="10" Background="WhiteSmoke">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
 
-        <!-- Left Column - Controls -->
-        <StackPanel Grid.Column="0" VerticalAlignment="Top">
-            <TextBlock Text="Recipe Manager" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
+            <!-- Left Column - Controls -->
+            <Border Grid.Column="0" Background="LightGray" Padding="10" CornerRadius="10">
+                <StackPanel VerticalAlignment="Top">
+                    <TextBlock Text="Recipe Manager" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center" Foreground="DarkSlateBlue"/>
 
-            <!-- Operational Buttons -->
-            <StackPanel Margin="5,0,0,10">
-                <Button Content="Enter Recipe Details" Click="EnterRecipeDetails_Click" Style="{StaticResource ButtonStyle}"/>
-                <Button Content="Display All Recipes" Click="DisplayAllRecipes_Click" Style="{StaticResource ButtonStyle}"/>
-                <Button Content="Clear Data" Click="ClearData_Click" Style="{StaticResource ButtonStyle}"/>
-                <Button Content="Delete Recipe" Click="DeleteRecipe_Click" Style="{StaticResource ButtonStyle}"/>
-            </StackPanel>
+                    <!-- Operational Buttons -->
+                    <StackPanel Margin="5,0,0,10">
+                        <Button Content="Enter Recipe Details" Click="EnterRecipeDetails_Click" Style="{StaticResource ButtonStyle}"/>
+                        <Button Content="Display All Recipes" Click="DisplayAllRecipes_Click" Style="{StaticResource ButtonStyle}"/>
+                        <Button Content="Clear Data" Click="ClearData_Click" Style="{StaticResource ButtonStyle}"/>
+                        <Button Content="Delete Recipe" Click="DeleteRecipe_Click" Style="{StaticResource ButtonStyle}"/>
+                    </StackPanel>
 
-            <!-- ComboBox for recipe selection with label -->
-            <TextBlock Text="Display a Specific Recipe:" FontWeight="Bold" Margin="5,10,0,5"/>
-            <ComboBox x:Name="RecipeComboBox" Width="200" DisplayMemberPath="Name" SelectedValuePath="Name"
-                      SelectionChanged="RecipeComboBox_SelectionChanged"
-                      ToolTip="Select a recipe to display its details">
-                <ComboBox.Background>
-                    <LinearGradientBrush EndPoint="0,1">
-                        <GradientStop Color="#FFF0F0F0"/>
-                        <GradientStop Color="#FF1F50CA" Offset="1"/>
-                    </LinearGradientBrush>
-                </ComboBox.Background>
-            </ComboBox>
+                    <!-- ComboBox for recipe selection with label -->
+                    <TextBlock Text="Display a Specific Recipe:" FontWeight="Bold" Margin="5,10,0,5" Foreground="DarkSlateBlue"/>
+                    <ComboBox x:Name="RecipeComboBox" Width="200" DisplayMemberPath="Name" SelectedValuePath="Name"
+                              SelectionChanged="RecipeComboBox_SelectionChanged"
+                              ToolTip="Select a recipe to display its details">
+                        <ComboBox.Background>
+                            <LinearGradientBrush EndPoint="0,1">
+                                <GradientStop Color="White"/>
+                                <GradientStop Color="LightBlue" Offset="1"/>
+                            </LinearGradientBrush>
+                        </ComboBox.Background>
+                    </ComboBox>
 
-            <!-- Filter controls -->
-            <TextBlock Text="Filter Recipes" FontWeight="Bold" Margin="5,20,0,5"/>
-            <StackPanel Margin="5,0,0,10">
-                <TextBlock Text="Ingredient Name" Margin="0,0,0,5"/>
-                <TextBox x:Name="FilterIngredientTextBox" Width="200" Margin="0,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" BorderThickness="1" BorderBrush="Gray" />
+                    <!-- Filter controls -->
+                    <TextBlock Text="Filter Recipes" FontWeight="Bold" Margin="5,20,0,5" Foreground="DarkSlateBlue"/>
+                    <StackPanel Margin="5,0,0,10">
+                        <TextBlock Text="Ingredient Name" Margin="0,0,0,5" Foreground="DarkSlateBlue"/>
+                        <TextBox x:Name="FilterIngredientTextBox" Width="200" Margin="0,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" BorderThickness="1" BorderBrush="Gray" />
 
-                <TextBlock Text="Food Group" Margin="0,0,0,5"/>
-                <TextBox x:Name="FilterFoodGroupTextBox" Width="200" Margin="0,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" BorderThickness="1" BorderBrush="Gray" />
+                        <TextBlock Text="Food Group" Margin="0,0,0,5" Foreground="DarkSlateBlue"/>
+                        <TextBox x:Name="FilterFoodGroupTextBox" Width="200" Margin="0,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" BorderThickness="1" BorderBrush="Gray" />
 
-                <TextBlock Text="Max Calories" Margin="0,0,0,5"/>
-                <TextBox x:Name="FilterMaxCaloriesTextBox" Width="200" Margin="0,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" BorderThickness="1" BorderBrush="Gray" />
+                        <TextBlock Text="Max Calories" Margin="0,0,0,5" Foreground="DarkSlateBlue"/>
+                        <TextBox x:Name="FilterMaxCaloriesTextBox" Width="200" Margin="0,0,0,5" Style="{StaticResource PlaceholderTextBoxStyle}" BorderThickness="1" BorderBrush="Gray" />
 
-                <Button Content="Filter" Click="FilterButton_Click" Style="{StaticResource ButtonStyle}"/>
-            </StackPanel>
+                        <Button Content="Filter" Click="FilterButton_Click" Style="{StaticResource ButtonStyle}"/>
+                    </StackPanel>
 
-            <!-- Reset and Scale controls -->
-            <StackPanel Margin="5,20,0,0">
-                <TextBox x:Name="ScaleFactorTextBox" Text="{Binding Path=CurrentScaleFactor, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}" Tag="Enter scaling factor" Margin="5" BorderThickness="1" BorderBrush="Gray" />
-                <CheckBox Content="0.5x" Name="ScaleFactor05CheckBox" Checked="ScaleFactor05CheckBox_Checked" Unchecked="ScaleFactor05CheckBox_Unchecked" Margin="5"/>
-                <CheckBox Content="2x" Name="ScaleFactor2CheckBox" Checked="ScaleFactor2CheckBox_Checked" Unchecked="ScaleFactor2CheckBox_Unchecked" Margin="5"/>
-                <CheckBox Content="3x" Name="ScaleFactor3CheckBox" Checked="ScaleFactor3CheckBox_Checked" Unchecked="ScaleFactor3CheckBox_Unchecked" Margin="5"/>
-                <Button x:Name="ScaleButton" Content="Scale Recipe" Click="ScaleButton_Click" Style="{StaticResource ButtonStyle}" Margin="5,0,0,0"/>
-                <Button Content="Reset" Click="ResetButton_Click" Style="{StaticResource ButtonStyle}" Margin="5,5,5,0"/>
-                <Button Content="Exit" Click="ExitButton_Click" Style="{StaticResource ButtonStyle}" Margin="0,0,0,5"/>
-            </StackPanel>
-        </StackPanel>
+                    <!-- Reset and Scale controls -->
+                    <StackPanel Margin="5,20,0,0">
+                        <TextBox x:Name="ScaleFactorTextBox" Text="{Binding Path=CurrentScaleFactor, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}" Tag="Enter scaling factor" Margin="5" BorderThickness="1" BorderBrush="Gray" Background="LightYellow"/>
+                        <CheckBox Content="0.5x" Name="ScaleFactor05CheckBox" Checked="ScaleFactor05CheckBox_Checked" Unchecked="ScaleFactor05CheckBox_Unchecked" Margin="5" Foreground="DarkSlateBlue"/>
+                        <CheckBox Content="2x" Name="ScaleFactor2CheckBox" Checked="ScaleFactor2CheckBox_Checked" Unchecked="ScaleFactor2CheckBox_Unchecked" Margin="5" Foreground="DarkSlateBlue"/>
+                        <CheckBox Content="3x" Name="ScaleFactor3CheckBox" Checked="ScaleFactor3CheckBox_Checked" Unchecked="ScaleFactor3CheckBox_Unchecked" Margin="5" Foreground="DarkSlateBlue"/>
+                        <Button x:Name="ScaleButton" Content="Scale Recipe" Click="ScaleButton_Click" Style="{StaticResource ButtonStyle}" Margin="5,0,0,0"/>
+                        <Button Content="Reset" Click="ResetButton_Click" Style="{StaticResource ButtonStyle}" Margin="5,5,5,0"/>
+                        <Button Content="Exit" Click="ExitButton_Click" Style="{StaticResource ButtonStyle}" Margin="0,0,0,5"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
 
-        <!-- Right Column - Output area -->
-        <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Padding="10">
-            <ScrollViewer>
-                <TextBlock x:Name="OutputTextBlock" TextWrapping="Wrap"/>
-            </ScrollViewer>
-        </Border>
-    </Grid>
+            <!-- Right Column - Output area -->
+            <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Padding="10" Background="LightSteelBlue" CornerRadius="10">
+                <ScrollViewer>
+                    <TextBlock x:Name="OutputTextBlock" TextWrapping="Wrap" Foreground="Black"/>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </ScrollViewer>
 </Window>
